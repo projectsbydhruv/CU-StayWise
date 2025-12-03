@@ -3,7 +3,7 @@
 def get_db_params():
     return {
         "host": "localhost",
-        "port": 5432,          # from docker inspect
+        "port": 5433,          # from docker inspect
         "dbname": "postgres",  # default DB since POSTGRES_DB not set
         "user": "postgres",    # default user
         "password": "123"      # from POSTGRES_PASSWORD

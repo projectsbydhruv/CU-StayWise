@@ -2,237 +2,732 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CU StayWise – Quick Overview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CU StayWise – Overview</title>
     <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        :root {
+            --cu-blue: #C5ECFF;
+            --cu-blue-deep: #1d4ed8;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --border-soft: #e5e7eb;
+            --bg-page: #ffffff;
+            --bg-subtle: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background: #f4f5fb;
         }
 
-        .header {
-            background: #9BDDFF;
-            color: #0f172a;
-            padding: 24px 32px;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-main);
+            background: var(--bg-page);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        .site-header {
+            background: var(--bg-page);
+            border-bottom: 1px solid var(--border-soft);
+            padding: 20px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .site-brand {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 14px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: 0.04em;
+        .site-logo {
+            height: 36px;
         }
 
-        .nav-links a {
-            margin-left: 16px;
-            text-decoration: none;
-            color: #0f172a;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 14px;
-            border-radius: 999px;
-            border: 1px solid transparent;
-        }
-
-        .nav-links a.primary {
-            background: #1d4ed8;
-            color: white;
-        }
-
-        .nav-links a.secondary {
-            border-color: rgba(15,23,42,0.15);
-        }
-
-        .hero {
-            max-width: 960px;
-            margin: 32px auto;
-            padding: 0 24px;
-        }
-
-        .hero-title {
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-
-        .hero-subtitle {
-            font-size: 14px;
-            color: #4b5563;
-        }
-
-        .kpi-row {
-            margin-top: 32px;
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 18px;
-        }
-
-        .kpi-card {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 6px 20px rgba(15,23,42,0.12);
-        }
-
-        .kpi-label {
-            font-size: 12px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
-        .kpi-value {
-            margin-top: 6px;
-            font-size: 26px;
-            font-weight: 800;
-        }
-
-        .section-title {
-            margin-top: 40px;
+        .site-name {
             font-size: 22px;
             font-weight: 700;
-            color: #111827;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .site-tagline-small {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* Main container */
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px 60px 32px;
+        }
+
+        /* Hero */
+        .overview-hero {
+            padding: 48px 0 40px 0;
+        }
+
+        .overview-title {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .overview-subtitle {
+            font-size: 17px;
+            color: var(--text-muted);
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        /* Nav buttons */
+        .top-nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            margin-bottom: 32px;
+        }
+
+        .top-nav-button {
+            padding: 11px 20px;
+            border-radius: 12px;
+            border: 2px solid #1a1a1a;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .top-nav-button--secondary {
+            background: #ffffff;
+            color: #1a1a1a;
+        }
+
+        .top-nav-button:hover {
+            background: #000000;
+            border-color: #000000;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .top-nav-button--secondary:hover {
+            background: #111827;
+            color: #ffffff;
+        }
+
+        /* Stats cards */
+        .cards-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
         }
 
         .stat-card {
-            background: white;
-            margin-top: 16px;
-            padding: 20px;
-            border-radius: 18px;
-            box-shadow: 0 4px 18px rgba(15,23,42,0.10);
+            background: var(--bg-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-soft);
         }
 
         .stat-label {
-            font-size: 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
             font-weight: 600;
-            color: #4b5563;
-            margin-bottom: 4px;
         }
 
         .stat-value {
-            font-size: 18px;
+            font-size: 32px;
             font-weight: 700;
-            color: #111827;
+            letter-spacing: -0.02em;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 56px;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        /* Chart card */
+        .chart-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .chart-wrapper {
+            height: 350px;
+        }
+
+        /* Table */
+        .table-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: var(--bg-subtle);
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-subtle);
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        /* Ghost landlord section */
+        .ghost-section {
+            background: var(--cu-blue);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 16px;
+        }
+
+        .ghost-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .ghost-input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            font-size: 15px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .ghost-input:focus {
+            outline: none;
+            border-color: var(--cu-blue-deep);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+
+        .ghost-button {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .ghost-button:hover {
+            background: #000000;
+            transform: translateY(-1px);
+        }
+
+        .error-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ghost-result {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 20px;
+        }
+
+        .ghost-result-header {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .ghost-result-main {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .ghost-label {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .ghost-label-speedy {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .ghost-label-meh {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .ghost-label-slow {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .ghost-details {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .ghost-details-item {
+            margin-bottom: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .page {
+                padding: 0 20px 40px 20px;
+            }
+
+            .overview-hero {
+                padding: 32px 0 28px 0;
+            }
+
+            .overview-title {
+                font-size: 28px;
+            }
+
+            .cards-row {
+                grid-template-columns: 1fr;
+            }
+
+            .ghost-form {
+                flex-direction: column;
+            }
+
+            .chart-wrapper {
+                height: 240px;
+            }
         }
     </style>
 </head>
-
 <body>
-
-<div class="header">
-    <div class="logo">CU StayWise</div>
-    <div class="nav-links">
-        <a href="/home" class="secondary">Livability Score</a>
-        <a href="/overview" class="primary">Quick Overview</a>
-        <a href="/map" class="secondary">Interactive Map</a>
-    </div>
-</div>
-
-<div class="hero">
-    <div class="hero-title">Quick Overview</div>
-    <div class="hero-subtitle">
-        Here is a quick glimpse of Columbia's neighborhood.
-    </div>
-
-    <!-- Top 3 KPIs -->
-    <div class="kpi-row">
-        <div class="kpi-card">
-            <div class="kpi-label">Total Complaints</div>
-            <div class="kpi-value">{{ total_complaints }}</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Buildings Analyzed</div>
-            <div class="kpi-value">{{ total_buildings }}</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">ZIP Codes Covered</div>
-            <div class="kpi-value">{{ total_zips }}</div>
+<header class="site-header">
+    <div class="site-brand">
+        <img src="{{ url_for('static', filename='columbia_logo.png') }}" alt="Columbia University" class="site-logo">
+        <div>
+            <div class="site-name">CU StayWise</div>
+            <div class="site-tagline-small">Housing insights around Columbia</div>
         </div>
     </div>
+</header>
 
-    <!-- Best & Worst ZIP Codes -->
-    <div class="section-title">Best &amp; Worst ZIP Codes</div>
+<main class="page">
+    <section class="overview-hero">
+        <h1 class="overview-title">Neighborhood insights at a glance</h1>
+        <p class="overview-subtitle">
+            A data-backed snapshot of complaint patterns near campus—so you know what to look out for before you sign a lease.
+        </p>
 
-    <div class="stat-card">
-        <div class="stat-label">Best ZIP Code</div>
-        {% if best_zip %}
-            <div class="stat-value">
-                ZIP {{ best_zip.zip }} — Score {{ best_zip.avg_score }}
+        <div class="top-nav-buttons">
+            <a href="{{ url_for('home') }}" class="top-nav-button">
+                Livability score
+            </a>
+            <a href="{{ url_for('index') }}" class="top-nav-button top-nav-button--secondary">
+                Interactive map
+            </a>
+        </div>
+
+        <div class="cards-row">
+            <div class="stat-card">
+                <div class="stat-label">311 Complaints Analyzed</div>
+                <div class="stat-value">{{ "{:,}".format(total_complaints) }}</div>
             </div>
-        {% else %}
-            <div class="stat-value">Not enough data to compute this yet.</div>
-        {% endif %}
+            <div class="stat-card">
+                <div class="stat-label">Buildings Covered</div>
+                <div class="stat-value">{{ "{:,}".format(total_buildings) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ZIP Codes Near Campus</div>
+                <div class="stat-value">{{ total_zipcodes }}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chart section -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Most common housing issues</h2>
+            <p class="section-subtitle">
+                These are the top complaint categories filed around Columbia. Noise and building maintenance issues dominate.
+            </p>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-wrapper">
+                <canvas id="complaintChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ZIP breakdown -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Complaint patterns by ZIP code</h2>
+            <p class="section-subtitle">
+                Each neighborhood has its own story. Here's what residents complain about most and least in each ZIP.
+            </p>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ZIP Code</th>
+                        <th>Most Common Issue</th>
+                        <th>Least Common Issue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for z in zip_breakdown %}
+                        <tr>
+                            <td><strong>{{ z.zip }}</strong></td>
+                            <td>
+                                {{ z.most_cat }}
+                                <span class="pill">{{ "{:,}".format(z.most_cnt) }}</span>
+                            </td>
+                            <td>
+                                {{ z.least_cat }}
+                                <span class="pill">{{ "{:,}".format(z.least_cnt) }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+  <!-- Best buildings -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Best buildings to live in</h2>
+        <p class="section-subtitle">
+            These addresses have the highest livability scores—a great starting point for your search.
+        </p>
     </div>
 
-    <div class="stat-card">
-        <div class="stat-label">Worst ZIP Code</div>
-        {% if worst_zip %}
-            <div class="stat-value">
-                ZIP {{ worst_zip.zip }} — Score {{ worst_zip.avg_score }}
-            </div>
-        {% else %}
-            <div class="stat-value">Not enough data to compute this yet.</div>
-        {% endif %}
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Address</th>
+                    <th>ZIP Code</th>
+                    <th>Livability Score</th>
+                    <th>Total Complaints</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in low_buildings %}
+                    <tr>
+                        <td>{{ b.address }}</td>
+                        <td>{{ b.zip }}</td>
+                        <td>
+                            {% if b.livability_score is not none %}
+                                <strong style="color:
+                                    {% if b.livability_score >= 80 %}#166534
+                                    {% elif b.livability_score >= 60 %}#1e40af
+                                    {% elif b.livability_score >= 40 %}#854d0e
+                                    {% else %}#b91c1c
+                                    {% endif %}
+                                ">{{ b.livability_score }}</strong>
+                            {% else %}
+                                <span style="color: #9ca3af;">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ b.count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Worst buildings -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Buildings to be cautious about</h2>
+        <p class="section-subtitle">
+            These addresses have lower livability scores. If you're considering one, investigate what's driving the score down.
+        </p>
     </div>
 
-    <!-- Best & Worst Streets -->
-    <div class="section-title">Best &amp; Worst Streets</div>
-
-    <div class="stat-card">
-        <div class="stat-label">Best Street</div>
-        {% if best_street %}
-            <div class="stat-value">
-                {{ best_street.street }} — Score {{ best_street.avg_score }}
-            </div>
-        {% else %}
-            <div class="stat-value">Not enough data to compute this yet.</div>
-        {% endif %}
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Address</th>
+                    <th>ZIP Code</th>
+                    <th>Livability Score</th>
+                    <th>Total Complaints</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in high_buildings %}
+                    <tr>
+                        <td>{{ b.address }}</td>
+                        <td>{{ b.zip }}</td>
+                        <td>
+                            {% if b.livability_score is not none %}
+                                <strong style="color:
+                                    {% if b.livability_score >= 80 %}#166534
+                                    {% elif b.livability_score >= 60 %}#1e40af
+                                    {% elif b.livability_score >= 40 %}#854d0e
+                                    {% else %}#b91c1c
+                                    {% endif %}
+                                ">{{ b.livability_score }}</strong>
+                            {% else %}
+                                <span style="color: #9ca3af;">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ b.count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+</section>
 
-    <div class="stat-card">
-        <div class="stat-label">Worst Street</div>
-        {% if worst_street %}
-            <div class="stat-value">
-                {{ worst_street.street }} — Score {{ worst_street.avg_score }}
-            </div>
-        {% else %}
-            <div class="stat-value">Not enough data to compute this yet.</div>
-        {% endif %}
-    </div>
+    <!-- Ghost Landlord -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Landlord responsiveness check</h2>
+            <p class="section-subtitle">
+                See how quickly issues get resolved at any address. Enter a building address, ZIP code, or BBL.
+            </p>
+        </div>
 
-    <!-- Best & Worst Buildings -->
-    <div class="section-title">Best &amp; Worst Buildings</div>
+        <div class="ghost-section">
+            <form method="post" class="ghost-form">
+                <input
+                    type="text"
+                    name="building_query"
+                    class="ghost-input"
+                    placeholder="e.g., 537 West 142 Street, 10027, or 10-digit BBL"
+                    value="{{ building_query or '' }}"
+                >
+                <button type="submit" class="ghost-button">Check responsiveness</button>
+            </form>
 
-    <div class="stat-card">
-        <div class="stat-label">Best Building</div>
-        {% if best_building %}
-            <div class="stat-value">
-                {{ best_building.address }} ({{ best_building.zip }}) —
-                Score {{ best_building.score }} · {{ best_building.complaints }} complaints
-            </div>
-        {% else %}
-            <div class="stat-value">Not enough data to compute this yet.</div>
-        {% endif %}
-    </div>
+            {% if res_error %}
+                <div class="error-banner">
+                    {{ res_error }}
+                </div>
+            {% endif %}
 
-    <div class="stat-card">
-        <div class="stat-label">Worst Building</div>
-        {% if worst_building %}
-            <div class="stat-value">
-                {{ worst_building.address }} ({{ worst_building.zip }}) —
-                Score {{ worst_building.score }} · {{ worst_building.complaints }} complaints
-            </div>
-        {% else %}
-            <div class="stat-value">Not enough data to compute this yet.</div>
-        {% endif %}
-    </div>
+            {% if res_building %}
+                <div class="ghost-result">
+                    <div class="ghost-result-header">
+                        Average resolution time for
+                        {% if res_building.address %}
+                            <strong>{{ res_building.address }}</strong>
+                            {% if res_building.zipcode %} (ZIP {{ res_building.zipcode }}){% endif %}
+                        {% else %}
+                            <strong>{{ res_building.query }}</strong>
+                        {% endif %}
+                    </div>
 
-</div>
+                    <div class="ghost-result-main">
+                        {{ res_building.avg_days }} days
+                    </div>
 
+                    {% if res_building.label == "Speedy" %}
+                        <span class="ghost-label ghost-label-speedy">✓ {{ res_building.label }}</span>
+                    {% elif res_building.label == "Ghosted" or res_building.label == "Slow" %}
+                        <span class="ghost-label ghost-label-slow">{{ res_building.label }}</span>
+                    {% else %}
+                        <span class="ghost-label ghost-label-meh">{{ res_building.label }}</span>
+                    {% endif %}
+
+                    <div class="ghost-details">
+                        <div class="ghost-details-item">
+                            <strong>Based on:</strong> {{ res_building.num_complaints }} closed complaints with valid dates
+                        </div>
+                        <div class="ghost-details-item">
+                            <strong>Scale:</strong> Under 3 days = Speedy · 3–7 days = Meh · 8–14 days = Slow · Over 14 days = Ghosted
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('complaintChart').getContext('2d');
+
+    // Shorten labels for better display
+    const originalLabels = {{ top_chart_labels | tojson }};
+    const displayLabels = originalLabels.map(label => {
+        // Split long labels into multiple lines
+        if (label.length > 20) {
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > 20) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            });
+            if (currentLine.trim()) lines.push(currentLine.trim());
+            return lines;
+        }
+        return label;
+    });
+
+    const complaintCounts = {{ top_chart_counts | tojson }};
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: displayLabels,
+            datasets: [{
+                data: complaintCounts,
+                backgroundColor: '#C5ECFF',
+                borderColor: '#9BDDFF',
+                borderWidth: 1,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1a1a1a',
+                    padding: 12,
+                    titleFont: { size: 13 },
+                    bodyFont: { size: 14, weight: 'bold' },
+                    callbacks: {
+                        title: function(context) {
+                            return originalLabels[context[0].dataIndex];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#666666',
+                        maxRotation: 0,
+                        minRotation: 0,
+                        autoSkip: false,
+                        padding: 8
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#e5e7eb' },
+                    ticks: {
+                        precision: 0,
+                        font: { size: 12 },
+                        color: '#666666'
+                    }
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>
