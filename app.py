@@ -167,11 +167,20 @@ def dashboard():
     zip_group = df_all.groupby(["incident_zip", cat_col]).size().reset_index(name="count")
     zip_breakdown = []
     for zip_code, group in zip_group.groupby("incident_zip"):
+        # Skip missing/invalid ZIPs to prevent 500 errors on Render
+        if pd.isna(zip_code):
+            continue
+        try:
+            zip_int = int(float(zip_code))
+        except (ValueError, TypeError):
+            continue
+
         group_sorted = group.sort_values("count", ascending=False)
         most = group_sorted.iloc[0]
         least = group_sorted.iloc[-1]
+
         zip_breakdown.append({
-            "zip": int(zip_code),
+            "zip": zip_int,
             "most_cat": most[cat_col],
             "most_cnt": int(most["count"]),
             "least_cat": least[cat_col],
