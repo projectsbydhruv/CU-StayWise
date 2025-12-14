@@ -167,9 +167,7 @@ def dashboard():
     zip_group = df_all.groupby(["incident_zip", cat_col]).size().reset_index(name="count")
     zip_breakdown = []
     for zip_code, group in zip_group.groupby("incident_zip"):
-        # Skip missing/invalid ZIPs to prevent 500 errors on Render
-        if pd.isna(zip_code):
-            continue
+        # Defensive ZIP parsing
         try:
             zip_int = int(float(zip_code))
         except (ValueError, TypeError):
@@ -186,6 +184,7 @@ def dashboard():
             "least_cat": least[cat_col],
             "least_cnt": int(least["count"]),
         })
+
     zip_breakdown = sorted(zip_breakdown, key=lambda z: z["zip"])
 
     best_buildings, worst_buildings = _compute_best_worst_buildings()
@@ -270,12 +269,19 @@ def dashboard():
 
                         addr = None
                         zipc = None
-                        if "Incident_Address" in subset.columns and subset["Incident_Address"].notna().any():
-                            addr = str(subset.iloc[0]["Incident_Address"])
+
+                        if "Incident_Address" in subset.columns:
+                            addr_series = subset["Incident_Address"].dropna()
+                            if not addr_series.empty:
+                                addr = str(addr_series.iloc[0])
+
                         if "incident_zip" in subset.columns:
                             zseries = subset["incident_zip"].dropna()
                             if not zseries.empty:
-                                zipc = int(float(zseries.iloc[0]))
+                                try:
+                                    zipc = int(float(zseries.iloc[0]))
+                                except (ValueError, TypeError):
+                                    zipc = None
 
                         res_building = {
                             "query": building_query,
