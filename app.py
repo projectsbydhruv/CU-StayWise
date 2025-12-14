@@ -166,10 +166,13 @@ def dashboard():
     # ZIP breakdown
     zip_group = df_all.groupby(["incident_zip", cat_col]).size().reset_index(name="count")
     zip_breakdown = []
+
     for zip_code, group in zip_group.groupby("incident_zip"):
-        # Defensive ZIP parsing
+        # Skip missing/invalid ZIPs to prevent 500 errors in production
+        if pd.isna(zip_code):
+            continue
         try:
-            zip_int = int(float(zip_code))
+            zip_int = int(float(zip_code))  # handles "10027.0" safely
         except (ValueError, TypeError):
             continue
 
@@ -186,6 +189,7 @@ def dashboard():
         })
 
     zip_breakdown = sorted(zip_breakdown, key=lambda z: z["zip"])
+
 
     best_buildings, worst_buildings = _compute_best_worst_buildings()
 
