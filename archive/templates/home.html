@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CU StayWise – Housing Insights</title>
+    <style>
+        :root {
+            --cu-blue: #C5ECFF;
+            --cu-blue-deep: #1d4ed8;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --border-soft: #e5e7eb;
+            --bg-page: #ffffff;
+            --bg-subtle: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-main);
+            background: var(--bg-page);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        .site-header {
+            background: var(--bg-page);
+            border-bottom: 1px solid var(--border-soft);
+            padding: 20px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .site-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .site-logo {
+            height: 36px;
+        }
+
+        .site-name {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .site-tagline-small {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* Main Container */
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0 60px 0;
+            text-align: center;
+        }
+
+        .hero-tagline {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin: 0 auto 24px auto;
+            max-width: 900px;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* Error Message */
+        .error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            margin: 0 auto 32px auto;
+            border: 1px solid #fecaca;
+            max-width: 700px;
+            font-weight: 500;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--cu-blue);
+            border-radius: 20px;
+            padding: 48px 40px;
+            margin: 0 auto 48px auto;
+            max-width: 900px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .search-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+
+        .search-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border-soft);
+            font-size: 15px;
+            background: #ffffff;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--cu-blue-deep);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-button-wrapper {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .search-button {
+            padding: 16px 48px;
+            border-radius: 12px;
+            border: none;
+            background: #1a1a1a;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-button:hover {
+            background: #000000;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+        }
+
+        /* Results Card */
+        .result-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            margin: 0 auto 32px auto;
+            max-width: 900px;
+            border: 1px solid var(--border-soft);
+        }
+
+        .result-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-score-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .result-score {
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .score-badge {
+            display: inline-block;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .score-good {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .score-medium {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+        .score-poor {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .result-subtitle {
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .result-meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        /* Advanced Toggle */
+        .advanced-toggle {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .advanced-toggle-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 2px solid var(--cu-blue-deep);
+            background: #ffffff;
+            color: var(--cu-blue-deep);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .advanced-toggle-btn:hover {
+            background: #eff6ff;
+        }
+
+        .advanced-toggle-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .details-panel {
+            margin-top: 20px;
+            padding: 24px;
+            background: var(--bg-subtle);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .details-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .details-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .details-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 14px;
+        }
+
+        .details-list li:last-child {
+            border-bottom: none;
+        }
+
+        .details-cat {
+            font-weight: 600;
+        }
+
+        .details-count {
+            color: var(--text-muted);
+        }
+
+        /* Other Matches */
+        .other-matches {
+            margin-top: 32px;
+            font-size: 14px;
+        }
+
+        .other-matches strong {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .other-matches ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 12px;
+        }
+
+        .other-matches li {
+            padding: 8px 0;
+            color: var(--text-muted);
+        }
+
+        /* Score Legend */
+        .score-legend {
+            margin-top: 32px;
+            padding: 24px;
+            background: var(--bg-subtle);
+            border-radius: 12px;
+        }
+
+        .score-legend-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .legend-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .legend-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .legend-excellent { background: #dcfce7; color: #166534; }
+        .legend-good { background: #dbeafe; color: #1e40af; }
+        .legend-moderate { background: #fef9c3; color: #854d0e; }
+        .legend-poor { background: #fee2e2; color: #b91c1c; }
+
+        /* Bottom CTA Section */
+        .bottom-cta {
+            margin: 80px auto 60px auto;
+            text-align: center;
+            padding: 60px 40px;
+            background: var(--cu-blue);
+            border-radius: 20px;
+            max-width: 900px;
+        }
+
+        .bottom-cta-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .bottom-cta-text {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .cta-button-primary {
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #1a1a1a;
+        }
+
+        .cta-button-primary:hover {
+            background: #000000;
+            border-color: #000000;
+            transform: translateY(-1px);
+        }
+
+        .cta-button-secondary {
+            background: #1a1a1a;
+            color: white;
+            border: 2px solid #1a1a1a;
+        }
+
+        .cta-button-secondary:hover {
+            background: #000000;
+            border-color: #000000;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .site-header {
+                padding: 16px 20px;
+            }
+
+            .page {
+                padding: 0 20px;
+            }
+
+            .hero {
+                padding: 48px 0 40px 0;
+            }
+
+            .hero-tagline {
+                font-size: 32px;
+                margin-bottom: 16px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .search-section {
+                padding: 32px 24px;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .search-button-wrapper {
+                grid-column: 1;
+            }
+
+            .result-card {
+                padding: 28px;
+            }
+
+            .result-score {
+                font-size: 42px;
+            }
+
+            .bottom-cta {
+                padding: 40px 24px;
+                margin: 48px auto 40px auto;
+            }
+
+            .bottom-cta-title {
+                font-size: 24px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .cta-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <div class="site-brand">
+        <img src="{{ url_for('static', filename='columbia_logo.png') }}" alt="Columbia University" class="site-logo">
+        <div>
+            <div class="site-name">CU StayWise</div>
+            <div class="site-tagline-small">Housing insights around Columbia</div>
+        </div>
+    </div>
+</header>
+
+<main class="page">
+    <section class="hero">
+        <h1 class="hero-tagline">
+            Every home has a story - we help reveal yours.
+        </h1>
+        <p class="hero-subtitle">
+            Your next move matters. Get data-driven insights before you decide.
+        </p>
+    </section>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <section class="search-section">
+        <h2 class="search-title">Get your livability score</h2>
+        <p class="search-subtitle">
+            Enter an address, street, or ZIP code (10025, 10026, 10027, 10031)
+        </p>
+
+        <form class="search-form" method="post">
+            <input
+                type="text"
+                name="building"
+                class="search-input"
+                placeholder="Building no."
+                value="{{ building or '' }}"
+            >
+            <input
+                type="text"
+                name="street"
+                class="search-input"
+                placeholder="Street name"
+                value="{{ street or '' }}"
+            >
+            <input
+                type="text"
+                name="zipcode"
+                class="search-input"
+                placeholder="ZIP code"
+                value="{{ zipcode or '' }}"
+            >
+            <div class="search-button-wrapper">
+                <button type="submit" class="search-button">Get score</button>
+            </div>
+        </form>
+    </section>
+
+    {% if results %}
+        {% set best = results[0] %}
+        <section class="result-card">
+            <div class="result-label">Best match</div>
+            <div class="result-score-row">
+                <div class="result-score">{{ best.livability_score }}</div>
+                <span class="score-badge
+                    {% if best.livability_score >= 80 %}score-good
+                    {% elif best.livability_score >= 60 %}score-medium
+                    {% else %}score-poor
+                    {% endif %}
+                ">
+                    {% if best.livability_score >= 80 %}
+                        Excellent livability
+                    {% elif best.livability_score >= 60 %}
+                        Good livability
+                    {% elif best.livability_score >= 40 %}
+                        Moderate livability
+                    {% else %}
+                        Poor livability
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="result-subtitle">
+                {{ best.address or 'Address unknown' }}
+                {% if best.zipcode %} · ZIP {{ best.zipcode }}{% endif %}
+            </div>
+
+            {% if best.match_note %}
+                <div class="result-meta">
+                    {{ best.match_note }}
+                </div>
+            {% endif %}
+
+            <div class="result-meta">
+                {{ best.complaint_count }} complaints recorded
+                {% if best.total_crime_incidents is not none %}
+                    · {{ best.total_crime_incidents }} crime incident(s)
+                {% endif %}
+            </div>
+
+            {% if best.category_breakdown %}
+                <div class="advanced-toggle">
+                    <button type="button" id="details-toggle" class="advanced-toggle-btn">
+                        View breakdown
+                    </button>
+                    <p class="advanced-toggle-hint">
+                        See complaint categories for this address
+                    </p>
+                </div>
+
+                <div id="details-panel" class="details-panel">
+                    <div class="details-title">Complaint breakdown</div>
+                    <div class="details-subtitle">
+                        311 complaints by category
+                    </div>
+                    <ul class="details-list">
+                        {% for cat, count in best.category_breakdown.items() %}
+                            <li>
+                                <span class="details-cat">{{ cat }}</span>
+                                <span class="details-count">
+                                    {{ count }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if results|length > 1 %}
+                <div class="other-matches">
+                    <strong>Other matches</strong>
+                    <ul>
+                        {% for r in results[1:] %}
+                            <li>
+                                <strong>{{ r.livability_score }}</strong> ·
+                                {{ r.address or 'Address unknown' }}
+                                {% if r.zipcode %} (ZIP {{ r.zipcode }}){% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="score-legend">
+                <div class="score-legend-title">Score guide</div>
+                <div class="legend-badges">
+                    <span class="legend-badge legend-excellent">80–100 Excellent</span>
+                    <span class="legend-badge legend-good">60–79 Good</span>
+                    <span class="legend-badge legend-moderate">40–59 Moderate</span>
+                    <span class="legend-badge legend-poor">0–39 Poor</span>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="bottom-cta">
+        <h2 class="bottom-cta-title">Explore the neighborhood</h2>
+        <p class="bottom-cta-text">
+            Get a broader view of Columbia's surroundings with our interactive tools
+        </p>
+        <div class="cta-buttons">
+            <a href="{{ url_for('dashboard') }}" class="cta-button cta-button-primary">
+                Neighborhood snapshot
+            </a>
+            <a href="{{ url_for('index') }}" class="cta-button cta-button-secondary">
+                Interactive map
+            </a>
+        </div>
+    </section>
+</main>
+
+<script>
+    const toggleBtn = document.getElementById('details-toggle');
+    const panel = document.getElementById('details-panel');
+
+    if (toggleBtn && panel) {
+        toggleBtn.addEventListener('click', () => {
+            const isHidden = panel.style.display === '' || panel.style.display === 'none';
+            panel.style.display = isHidden ? 'block' : 'none';
+            toggleBtn.textContent = isHidden ? 'Hide breakdown' : 'View breakdown';
+        });
+    }
+</script>
+</body>
+</html>

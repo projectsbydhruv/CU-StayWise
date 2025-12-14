@@ -1,0 +1,17 @@
+flask==3.0.0
+pandas==2.1.4
+numpy==1.26.2
+
+psycopg2-binary
+SQLAlchemy
+
+
+
+<div class="top-nav-buttons">
+            <a href="{{ url_for('home') }}" class="top-nav-button">
+                Livability score
+            </a>
+            <a href="{{ url_for('index') }}" class="top-nav-button top-nav-button--secondary">
+                Interactive map
+            </a>
+        </div>

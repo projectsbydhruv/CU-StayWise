@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CU StayWise - Complaint Analysis</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --cu-blue: #C5ECFF;
+            --cu-blue-deep: #1d4ed8;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --border-soft: #e5e7eb;
+            --bg-page: #ffffff;
+            --bg-subtle: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .site-header {
+            background: var(--bg-page);
+            border-bottom: 1px solid var(--border-soft);
+            padding: 16px 32px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .site-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .site-logo {
+            height: 36px;
+        }
+
+        .site-name {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .site-tagline-small {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 380px;
+            background: var(--bg-page);
+            border-right: 1px solid var(--border-soft);
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            background: var(--cu-blue);
+            padding: 32px 24px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-header p {
+            font-size: 14px;
+            color: var(--text-main);
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .controls {
+            padding: 24px;
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-soft);
+            letter-spacing: -0.01em;
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-soft);
+            background: var(--bg-page);
+        }
+
+        .view-toggle button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            background: var(--bg-page);
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        .view-toggle button:first-child {
+            border-right: 1px solid var(--border-soft);
+        }
+
+        .view-toggle button.active {
+            background: var(--cu-blue);
+            color: var(--text-main);
+        }
+
+        .viewing-info {
+            background: #fef9c3;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #854d0e;
+            border: 1px solid #fde047;
+            display: none;
+            font-weight: 500;
+        }
+
+        .viewing-info.show {
+            display: block;
+        }
+
+        .category-group {
+            margin-bottom: 10px;
+        }
+
+        .category-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 2px solid var(--border-soft);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg-page);
+        }
+
+        .category-checkbox:hover {
+            border-color: var(--cu-blue-deep);
+            background: #eff6ff;
+        }
+
+        .category-checkbox.selected {
+            border-color: var(--cu-blue-deep);
+            background: #eff6ff;
+        }
+
+        .category-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--cu-blue-deep);
+        }
+
+        .category-label {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .select-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .select-btn {
+            flex: 1;
+            padding: 10px 14px;
+            background: var(--bg-page);
+            border: 2px solid var(--border-soft);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            color: var(--text-main);
+        }
+
+        .select-btn:hover {
+            border-color: var(--cu-blue-deep);
+            background: #eff6ff;
+        }
+
+        .update-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--text-main);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .update-btn:hover {
+            background: #000000;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .update-btn:active {
+            transform: translateY(0);
+        }
+
+        .update-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .advanced-button {
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 2px solid var(--cu-blue-deep);
+            background: var(--bg-page);
+            color: var(--cu-blue-deep);
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: block;
+        }
+
+        .advanced-button:hover {
+            background: #eff6ff;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border: 1px solid var(--border-soft);
+        }
+
+        .legend-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            margin-right: 10px;
+        }
+
+        .legend-note {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-soft);
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 24px 48px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            z-index: 2000;
+            display: none;
+            border: 1px solid var(--border-soft);
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--bg-subtle);
+            border-top: 3px solid var(--cu-blue-deep);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .popup-content {
+            padding: 12px;
+            font-family: inherit;
+        }
+
+        .popup-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .popup-score {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .popup-details {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .view-buildings-btn {
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: var(--cu-blue-deep);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .view-buildings-btn:hover {
+            background: #1e3a8a;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 50vh;
+            }
+
+            .legend {
+                bottom: 15px;
+                right: 15px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="site-header">
+        <div class="site-brand">
+            <img src="{{ url_for('static', filename='columbia_logo.png') }}" alt="Columbia University" class="site-logo">
+            <div>
+                <div class="site-name">CU StayWise</div>
+                <div class="site-tagline-small">Housing insights around Columbia</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <p>Explore housing complaints and safety information by building or area.</p>
+            </div>
+
+            <div class="controls">
+                <div class="view-toggle" id="view-toggle">
+                    <button id="building-view-btn" onclick="toggleView('building')" class="active">Building View</button>
+                    <button id="zipcode-view-btn" onclick="toggleView('zipcode')">Zip Code View</button>
+                </div>
+
+                <div class="viewing-info" id="viewing-info">
+                    📍 Currently viewing buildings in Zip Code: <strong id="current-zip-display"></strong>
+                </div>
+
+                <div class="section-title">Select Complaint Categories</div>
+
+                <div class="select-buttons">
+                    <button class="select-btn" onclick="selectAll()">Select All</button>
+                    <button class="select-btn" onclick="selectNone()">Clear All</button>
+                </div>
+
+                <div id="categories"></div>
+
+                <button class="update-btn" onclick="updateMap()">
+                    Update Map
+                </button>
+
+                <div class="nav-links">
+                    <a href="{{ url_for('home') }}" class="advanced-button">
+                        Livability Score
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="advanced-button">
+                        Neighborhood Snapshot
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+
+            <div class="legend">
+                <div class="legend-title">Complaint Categories</div>
+                <div id="legend-categories"></div>
+                <div class="legend-note">
+<!--                    <strong>Color intensity</strong> represents complaint volume<br>-->
+<!--                    <strong>Color hue</strong> shows most common complaint type-->
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading data...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const categories = {{ categories | tojson }};
+    let map;
+    let markersLayer;
+    let currentZipcode = null;
+    let currentView = 'building';
+
+    const colorPalette = [
+        '#e74c3c','#3498db','#f39c12','#9b59b6',
+        '#27ae60','#95a5a6','#1abc9c','#e67e22',
+        '#34495e','#f1c40f','#c0392b','#16a085',
+        '#d35400','#2c3e50','#8e44ad','#27ae60'
+    ];
+
+    const categoryColors = {};
+    categories.forEach((category, index) => {
+        categoryColors[category] = colorPalette[index % colorPalette.length];
+    });
+
+    function getCategoryColor(category) {
+        return categoryColors[category] || '#34495e';
+    }
+
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    function getColorWithSaturation(category, complaintCount, maxComplaints) {
+        const baseColor = getCategoryColor(category);
+        const minOpacity = 0.3;
+        const maxOpacity = 1.0;
+        const opacity = minOpacity + (maxOpacity - minOpacity) * (complaintCount / maxComplaints);
+
+        return {
+            color: baseColor,
+            opacity: Math.min(opacity, maxOpacity)
+        };
+    }
+
+    function initLegend() {
+        const legendContainer = document.getElementById('legend-categories');
+        const selectedCategories = getSelectedCategories();
+        legendContainer.innerHTML = '';
+
+        selectedCategories.forEach(category => {
+            const color = getCategoryColor(category);
+            const div = document.createElement('div');
+            div.className = 'legend-item';
+            div.innerHTML = `
+                <div class="legend-color" style="background: ${color};"></div>
+                <span style="font-size: 11px;">${category}</span>
+            `;
+            legendContainer.appendChild(div);
+        });
+    }
+
+    function initCategories() {
+        const container = document.getElementById('categories');
+
+        categories.forEach(category => {
+            const color = getCategoryColor(category);
+            const div = document.createElement('div');
+            div.className = 'category-group';
+            div.innerHTML = `
+                <label class="category-checkbox selected">
+                    <input type="checkbox"
+                           data-category="${category}"
+                           checked
+                           onchange="updateSelectedInfo()">
+                    <div style="width: 16px; height: 16px; background: ${color}; border-radius: 4px; margin-right: 8px;"></div>
+                    <span class="category-label">${category}</span>
+                </label>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function updateSelectedInfo() {
+        document.querySelectorAll('.category-checkbox').forEach(label => {
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            if (checkbox.checked) label.classList.add('selected');
+            else label.classList.remove('selected');
+        });
+        initLegend();
+    }
+
+    function getSelectedCategories() {
+        const selected = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            selected.push(cb.dataset.category);
+        });
+        return selected;
+    }
+
+    function selectAll() {
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+        updateSelectedInfo();
+    }
+
+    function selectNone() {
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        updateSelectedInfo();
+    }
+
+    function toggleView(view) {
+        currentView = view;
+        currentZipcode = null;
+
+        const zipcodeBtn = document.getElementById('zipcode-view-btn');
+        const buildingBtn = document.getElementById('building-view-btn');
+
+        if (view === 'zipcode') {
+            zipcodeBtn.classList.add('active');
+            buildingBtn.classList.remove('active');
+            document.getElementById('viewing-info').classList.remove('show');
+            document.getElementById('current-zip-display').textContent = '';
+        } else {
+            zipcodeBtn.classList.remove('active');
+            buildingBtn.classList.add('active');
+            document.getElementById('viewing-info').classList.remove('show');
+            document.getElementById('current-zip-display').textContent = '';
+        }
+
+        updateMap();
+    }
+
+    function initMap() {
+        // Center on Columbia University area with closer zoom
+        map = L.map('map').setView([40.8075, -73.9626], 14);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: 'Map data &copy; OpenStreetMap contributors, Imagery &copy; Carto',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        markersLayer = L.layerGroup().addTo(map);
+    }
+
+    async function viewAllBuildings() {
+        currentZipcode = null;
+        document.getElementById('viewing-info').classList.remove('show');
+        document.getElementById('current-zip-display').textContent = '';
+
+        const selected = getSelectedCategories();
+        const categoriesParam = encodeURIComponent(JSON.stringify(selected));
+
+        const loading = document.getElementById('loading');
+        loading.classList.add('show');
+
+        try {
+            const response = await fetch(`/api/all_buildings?categories=${categoriesParam}`);
+            const data = await response.json();
+
+            if (data.success) {
+                markersLayer.clearLayers();
+
+                if (data.buildings.length === 0) {
+                    alert("No buildings found for the selected categories.");
+                    return;
+                }
+
+                const maxComplaints = Math.max(...data.buildings.map(b => b.complaint_count));
+                const latlngs = [];
+
+                data.buildings.forEach(building => {
+                    const mostCommonType = building.most_common_category || categories[0];
+                    const colorInfo = getColorWithSaturation(mostCommonType, building.complaint_count, maxComplaints);
+
+                    const marker = L.circleMarker([building.latitude, building.longitude], {
+                        radius: 5,
+                        fillColor: colorInfo.color,
+                        color: '#fff',
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: colorInfo.opacity
+                    });
+
+                    const popupContent = `
+                        <div class="popup-content">
+                            <div class="popup-title">${building.Incident_Address || 'N/A'}</div>
+                            <div class="popup-score" style="color: ${colorInfo.color}">
+                                ${building.complaint_count}
+                            </div>
+                            <div class="popup-title">Complaint(s)</div>
+                            <div class="popup-details">
+                                Most Common: ${mostCommonType}<br>
+                                ZIP: ${building.incident_zip}
+                            </div>
+                        </div>
+                    `;
+
+                    marker.bindPopup(popupContent);
+                    marker.addTo(markersLayer);
+                    latlngs.push([building.latitude, building.longitude]);
+                });
+
+                // Set fixed bounds for Columbia zip codes
+                const columbiaBounds = L.latLngBounds(
+                    [40.790, -73.975],  // Southwest corner
+                    [40.825, -73.945]   // Northeast corner
+                );
+                map.fitBounds(columbiaBounds, {padding: [50, 50]});
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error loading full city building data. Please try again.');
+        } finally {
+            loading.classList.remove('show');
+        }
+    }
+
+    async function updateMap() {
+        const selected = getSelectedCategories();
+
+        if (selected.length === 0) {
+            alert('Please select at least one category');
+            return;
+        }
+
+        const loading = document.getElementById('loading');
+        loading.classList.add('show');
+
+        try {
+            if (currentView === 'building' && currentZipcode === null) {
+                await viewAllBuildings();
+                return;
+            } else if (currentView === 'building' && currentZipcode !== null) {
+                await viewBuildings(currentZipcode);
+                return;
+            } else {
+                const response = await fetch('/api/calculate_scores', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({categories: selected})
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayZipcodes(data.zipcodes);
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error loading data. Please try again.');
+        } finally {
+            loading.classList.remove('show');
+        }
+    }
+
+    function displayZipcodes(zipcodes) {
+        markersLayer.clearLayers();
+        currentZipcode = null;
+        currentView = 'zipcode';
+
+        document.getElementById('viewing-info').classList.remove('show');
+        document.getElementById('zipcode-view-btn').classList.add('active');
+        document.getElementById('building-view-btn').classList.remove('active');
+
+        const latlngs = [];
+        const maxComplaints = Math.max(...zipcodes.map(z => z.total_complaints));
+
+        zipcodes.forEach(zip => {
+            const mostCommonType = zip.most_common_category || categories[0];
+            const colorInfo = getColorWithSaturation(mostCommonType, zip.total_complaints, maxComplaints);
+
+            const circle = L.circleMarker([zip.latitude, zip.longitude], {
+                radius: 15,
+                fillColor: colorInfo.color,
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: colorInfo.opacity
+            });
+
+            const popupContent = `
+                <div class="popup-content">
+                    <div class="popup-title">Zip Code: ${zip.incident_zip}</div>
+                    <div class="popup-score" style="color: ${colorInfo.color}">
+                        ${zip.total_complaints} complaints
+                    </div>
+                    <div class="popup-details">
+                        Most Common Category: <strong>${mostCommonType}</strong><br>
+                        Number of Buildings: ${zip.num_buildings}<br>
+                    </div>
+                    <button class="view-buildings-btn" onclick="viewBuildings(${zip.incident_zip})">
+                        View Buildings
+                    </button>
+                </div>
+            `;
+
+            circle.bindPopup(popupContent);
+            circle.addTo(markersLayer);
+            latlngs.push([zip.latitude, zip.longitude]);
+        });
+
+        // Set fixed bounds for Columbia zip codes
+        const columbiaBounds = L.latLngBounds(
+            [40.790, -73.975],  // Southwest corner
+            [40.825, -73.945]   // Northeast corner
+        );
+        map.fitBounds(columbiaBounds, {padding: [50, 50]});
+    }
+
+    async function viewBuildings(zipcode) {
+        currentZipcode = zipcode;
+        currentView = 'building';
+
+        document.getElementById('viewing-info').classList.add('show');
+        document.getElementById('current-zip-display').textContent = zipcode;
+        document.getElementById('zipcode-view-btn').classList.remove('active');
+        document.getElementById('building-view-btn').classList.add('active');
+
+        const selected = getSelectedCategories();
+        const categoriesParam = encodeURIComponent(JSON.stringify(selected));
+
+        const loading = document.getElementById('loading');
+        loading.classList.add('show');
+
+        try {
+            const response = await fetch(`/api/buildings/${zipcode}?categories=${categoriesParam}`);
+            const data = await response.json();
+
+            if (data.success) {
+                markersLayer.clearLayers();
+
+                const maxComplaints = Math.max(...data.buildings.map(b => b.complaint_count));
+
+                data.buildings.forEach(building => {
+                    const mostCommonType = building.most_common_category || categories[0];
+                    const colorInfo = getColorWithSaturation(mostCommonType, building.complaint_count, maxComplaints);
+
+                    const marker = L.circleMarker([building.latitude, building.longitude], {
+                        radius: 8,
+                        fillColor: colorInfo.color,
+                        color: '#fff',
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: colorInfo.opacity
+                    });
+
+                    const popupContent = `
+                        <div class="popup-content">
+                            <div class="popup-title">${building.Incident_Address}</div>
+                            <div class="popup-score" style="color: ${colorInfo.color}">
+                                ${building.complaint_count}
+                            </div>
+                            <div class="popup-title">Complaint(s)</div>
+                            <div class="popup-details">
+                                Most Common: ${mostCommonType}<br>
+                            </div>
+                        </div>
+                    `;
+
+                    marker.bindPopup(popupContent);
+                    marker.addTo(markersLayer);
+                });
+
+                if (data.buildings.length > 0) {
+                    const bounds = L.latLngBounds(
+                        data.buildings.map(b => [b.latitude, b.longitude])
+                    );
+                    map.fitBounds(bounds, {padding: [50, 50]});
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error loading data. Please try again.');
+        } finally {
+            loading.classList.remove('show');
+        }
+    }
+
+    window.onload = function () {
+        initCategories();
+        initMap();
+        initLegend();
+        updateMap();
+    };
+</script>
+</body>
+</html>

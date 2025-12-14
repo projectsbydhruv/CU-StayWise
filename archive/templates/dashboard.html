@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CU StayWise – Overview</title>
+    <style>
+        :root {
+            --cu-blue: #C5ECFF;
+            --cu-blue-deep: #1d4ed8;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --border-soft: #e5e7eb;
+            --bg-page: #ffffff;
+            --bg-subtle: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-main);
+            background: var(--bg-page);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        .site-header {
+            background: var(--bg-page);
+            border-bottom: 1px solid var(--border-soft);
+            padding: 20px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .site-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .site-logo {
+            height: 36px;
+        }
+
+        .site-name {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .site-tagline-small {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* Main container */
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px 60px 32px;
+        }
+
+        /* Hero */
+        .overview-hero {
+            padding: 48px 0 40px 0;
+        }
+
+        .overview-title {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .overview-subtitle {
+            font-size: 17px;
+            color: var(--text-muted);
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        /* Nav buttons */
+        .top-nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            margin-bottom: 32px;
+        }
+
+        .top-nav-button {
+            padding: 11px 20px;
+            border-radius: 12px;
+            border: 2px solid #1a1a1a;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .top-nav-button--secondary {
+            background: #ffffff;
+            color: #1a1a1a;
+        }
+
+        .top-nav-button:hover {
+            background: #000000;
+            border-color: #000000;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .top-nav-button--secondary:hover {
+            background: #111827;
+            color: #ffffff;
+        }
+
+        /* Stats cards */
+        .cards-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: var(--bg-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-soft);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 56px;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        /* Chart card */
+        .chart-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .chart-wrapper {
+            height: 350px;
+        }
+
+        /* Table */
+        .table-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: var(--bg-subtle);
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-subtle);
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        /* Ghost landlord section */
+        .ghost-section {
+            background: var(--cu-blue);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 16px;
+        }
+
+        .ghost-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .ghost-input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            font-size: 15px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .ghost-input:focus {
+            outline: none;
+            border-color: var(--cu-blue-deep);
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+
+        .ghost-button {
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .ghost-button:hover:not(:disabled) {
+            background: #000000;
+            transform: translateY(-1px);
+        }
+
+        .ghost-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .error-banner.show {
+            display: block;
+        }
+
+        .ghost-result {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .ghost-result.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ghost-result-header {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .ghost-result-main {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .ghost-label {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .ghost-label-speedy {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .ghost-label-meh {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .ghost-label-slow {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .loading-spinner.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .page {
+                padding: 0 20px 40px 20px;
+            }
+
+            .overview-hero {
+                padding: 32px 0 28px 0;
+            }
+
+            .overview-title {
+                font-size: 28px;
+            }
+
+            .cards-row {
+                grid-template-columns: 1fr;
+            }
+
+            .ghost-form {
+                flex-direction: column;
+            }
+
+            .chart-wrapper {
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="site-header">
+    <div class="site-brand">
+        <img src="{{ url_for('static', filename='columbia_logo.png') }}" alt="Columbia University" class="site-logo">
+            <div class="site-name">CU StayWise</div>
+            <div class="site-tagline-small">Housing insights around Columbia</div>
+        </div>
+    </div>
+</header>
+
+<main class="page">
+    <section class="overview-hero">
+        <h1 class="overview-title">Neighborhood insights at a glance</h1>
+        <p class="overview-subtitle">
+            A data-backed snapshot of complaint patterns near campus—so you know what to look out for before you sign a lease.
+        </p>
+
+        <div class="top-nav-buttons">
+            <a href="{{ url_for('home') }}" class="top-nav-button">
+                Livability score
+            </a>
+            <a href="{{ url_for('index') }}" class="top-nav-button top-nav-button--secondary">
+                Interactive map
+            </a>
+        </div>
+
+        <div class="cards-row">
+            <div class="stat-card">
+                <div class="stat-label">311 Complaints Analyzed</div>
+                <div class="stat-value">{{ "{:,}".format(total_complaints) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Buildings Covered</div>
+                <div class="stat-value">{{ "{:,}".format(total_buildings) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ZIP Codes Near Campus</div>
+                <div class="stat-value">{{ total_zipcodes }}</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Most common housing issues</h2>
+            <p class="section-subtitle">
+                These are the top complaint categories filed around Columbia. Noise and building maintenance issues dominate.
+            </p>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-wrapper">
+                <canvas id="complaintChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Complaint patterns by ZIP code</h2>
+            <p class="section-subtitle">
+                Each neighborhood has its own story. Here's what residents complain about most and least in each ZIP.
+            </p>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ZIP Code</th>
+                        <th>Most Common Issue</th>
+                        <th>Least Common Issue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>10027</strong></td>
+                        <td>
+                            Noise - Residential
+                            <span class="pill">8,432</span>
+                        </td>
+                        <td>
+                            Water Leak
+                            <span class="pill">234</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>10025</strong></td>
+                        <td>
+                            Heat/Hot Water
+                            <span class="pill">7,891</span>
+                        </td>
+                        <td>
+                            Elevator
+                            <span class="pill">312</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>10031</strong></td>
+                        <td>
+                            General Construction
+                            <span class="pill">6,543</span>
+                        </td>
+                        <td>
+                            Mold
+                            <span class="pill">198</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>10032</strong></td>
+                        <td>
+                            Plumbing
+                            <span class="pill">5,234</span>
+                        </td>
+                        <td>
+                            Paint/Plaster
+                            <span class="pill">267</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Best buildings to live in</h2>
+            <p class="section-subtitle">
+                These addresses have the highest livability scores—a great starting point for your search.
+            </p>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>ZIP Code</th>
+                        <th>Livability Score</th>
+                        <th>Total Complaints</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>501 West 123rd Street</td>
+                        <td>10027</td>
+                        <td><strong style="color: #166534">92</strong></td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>615 West 129th Street</td>
+                        <td>10027</td>
+                        <td><strong style="color: #166534">89</strong></td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>420 Riverside Drive</td>
+                        <td>10025</td>
+                        <td><strong style="color: #166534">87</strong></td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>302 Cathedral Parkway</td>
+                        <td>10026</td>
+                        <td><strong style="color: #166534">85</strong></td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>550 West 125th Street</td>
+                        <td>10027</td>
+                        <td><strong style="color: #166534">83</strong></td>
+                        <td>9</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Buildings to be cautious about</h2>
+            <p class="section-subtitle">
+                These addresses have lower livability scores. If you're considering one, investigate what's driving the score down.
+            </p>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>ZIP Code</th>
+                        <th>Livability Score</th>
+                        <th>Total Complaints</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>3333 Broadway</td>
+                        <td>10031</td>
+                        <td><strong style="color: #b91c1c">28</strong></td>
+                        <td>156</td>
+                    </tr>
+                    <tr>
+                        <td>560 West 143rd Street</td>
+                        <td>10031</td>
+                        <td><strong style="color: #b91c1c">31</strong></td>
+                        <td>142</td>
+                    </tr>
+                    <tr>
+                        <td>509 West 135th Street</td>
+                        <td>10031</td>
+                        <td><strong style="color: #b91c1c">35</strong></td>
+                        <td>128</td>
+                    </tr>
+                    <tr>
+                        <td>601 West 141st Street</td>
+                        <td>10031</td>
+                        <td><strong style="color: #854d0e">38</strong></td>
+                        <td>119</td>
+                    </tr>
+                    <tr>
+                        <td>3940 Broadway</td>
+                        <td>10032</td>
+                        <td><strong style="color: #854d0e">42</strong></td>
+                        <td>107</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Landlord responsiveness check</h2>
+            <p class="section-subtitle">
+                See how quickly issues get resolved at any address. Enter a building address, ZIP code, or BBL.
+            </p>
+        </div>
+
+        <div class="ghost-section">
+            <form id="responsivenessForm" class="ghost-form">
+                <input
+                    type="text"
+                    id="buildingQuery"
+                    name="building_query"
+                    class="ghost-input"
+                    placeholder="e.g., 537 West 142 Street, 10027, or 10-digit BBL"
+                    required
+                >
+                <button type="submit" id="submitBtn" class="ghost-button">
+                    <span id="btnText">Check responsiveness</span>
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </button>
+            </form>
+
+            <div id="errorBanner" class="error-banner"></div>
+
+            <div id="ghostResult" class="ghost-result">
+                <div class="ghost-result-header" id="resultHeader"></div>
+                <div class="ghost-result-main" id="resultMain"></div>
+                <span id="resultLabel" class="ghost-label"></span>
+                <div class="ghost-details">
+                    <div class="ghost-details-item" id="resultComplaints"></div>
+                    <div class="ghost-details-item">
+                        <strong>Scale:</strong> Under 3 days = Speedy · 3–7 days = Meh · 8–14 days = Slow · Over 14 days = Ghosted
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+// Handle form submission
+document.getElementById('responsivenessForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const query = document.getElementById('buildingQuery').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const errorBanner = document.getElementById('errorBanner');
+    const ghostResult = document.getElementById('ghostResult');
+
+    // Reset displays
+    errorBanner.classList.remove('show');
+    ghostResult.classList.remove('show');
+
+    // Show loading state
+    submitBtn.disabled = true;
+    btnText.style.display = 'none';
+    loadingSpinner.classList.add('show');
+
+    try {
+        // Simulate API call - replace this with your actual endpoint
+        const response = await simulateAPICall(query);
+
+        if (response.error) {
+            // Show error
+            errorBanner.textContent = response.error;
+            errorBanner.classList.add('show');
+        } else {
+            // Show result
+            displayResult(response);
+            ghostResult.classList.add('show');
+        }
+    } catch (error) {
+        errorBanner.textContent = 'An error occurred. Please try again.';
+        errorBanner.classList.add('show');
+    } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        loadingSpinner.classList.remove('show');
+    }
+});
+
+// Simulate API call - REPLACE THIS with your actual backend endpoint
+async function simulateAPICall(query) {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Sample responses based on query
+    const sampleData = {
+        '537 West 142 Street': {
+            address: '537 West 142 Street',
+            zipcode: '10027',
+            avg_days: 2,
+            label: 'Speedy',
+            num_complaints: 15
+        },
+        '10027': {
+            query: '10027',
+            avg_days: 12,
+            label: 'Slow',
+            num_complaints: 234
+        },
+        'default': {
+            address: query,
+            avg_days: 5,
+            label: 'Meh',
+            num_complaints: 42
+        }
+    };
+
+    // Return sample data or error
+    if (query.length < 3) {
+        return { error: 'Please enter a valid address, ZIP code, or BBL.' };
+    }
+
+    return sampleData[query] || sampleData.default;
+}
+
+function displayResult(data) {
+    const resultHeader = document.getElementById('resultHeader');
+    const resultMain = document.getElementById('resultMain');
+    const resultLabel = document.getElementById('resultLabel');
+    const resultComplaints = document.getElementById('resultComplaints');
+
+    // Set header
+    let headerText = 'Average resolution time for ';
+    if (data.address) {
+        headerText += `<strong>${data.address}</strong>`;
+        if (data.zipcode) {
+            headerText += ` (ZIP ${data.zipcode})`;
+        }
+    } else {
+        headerText += `<strong>${data.query}</strong>`;
+    }
+    resultHeader.innerHTML = headerText;
+
+    // Set main result
+    resultMain.textContent = `${data.avg_days} days`;
+
+    // Set label with appropriate styling
+    resultLabel.textContent = `${data.label === 'Speedy' ? '✓ ' : ''}${data.label}`;
+    resultLabel.className = 'ghost-label';
+
+    if (data.label === 'Speedy') {
+        resultLabel.classList.add('ghost-label-speedy');
+    } else if (data.label === 'Ghosted' || data.label === 'Slow') {
+        resultLabel.classList.add('ghost-label-slow');
+    } else {
+        resultLabel.classList.add('ghost-label-meh');
+    }
+
+    // Set complaints count
+    resultComplaints.innerHTML = `<strong>Based on:</strong> ${data.num_complaints.toLocaleString()} closed complaints with valid dates`;
+}
+
+// Optional: Clear results when input changes
+document.getElementById('buildingQuery').addEventListener('input', () => {
+    document.getElementById('errorBanner').classList.remove('show');
+    document.getElementById('ghostResult').classList.remove('show');
+});
+    // Optional: Clear results when input changes
+    document.getElementById('buildingQuery').addEventListener('input', () => {
+        document.getElementById('errorBanner').classList.remove('show');
+        document.getElementById('ghostResult').classList.remove('show');
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('complaintChart').getContext('2d');
+
+    // Sample data for the chart
+    const complaintData = {
+        labels: ['Noise - Residential', 'Heat/Hot Water', 'General Construction', 'Plumbing', 'Unsanitary Condition', 'Water Leak', 'Elevator', 'Paint/Plaster'],
+        counts: [15234, 12891, 10543, 9234, 7432, 6123, 4891, 3876]
+    };
+
+    const displayLabels = complaintData.labels.map(label => {
+        // Split long labels into multiple lines
+        if (label.length > 20) {
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > 20) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            });
+            if (currentLine.trim()) lines.push(currentLine.trim());
+            return lines;
+        }
+        return label;
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: displayLabels,
+            datasets: [{
+                data: complaintData.counts,
+                backgroundColor: '#C5ECFF',
+                borderColor: '#9BDDFF',
+                borderWidth: 1,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1a1a1a',
+                    padding: 12,
+                    titleFont: { size: 13 },
+                    bodyFont: { size: 14, weight: 'bold' },
+                    callbacks: {
+                        title: function(context) {
+                            return complaintData.labels[context[0].dataIndex];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#666666',
+                        maxRotation: 0,
+                        minRotation: 0,
+                        autoSkip: false,
+                        padding: 8
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#e5e7eb' },
+                    ticks: {
+                        precision: 0,
+                        font: { size: 12 },
+                        color: '#666666'
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

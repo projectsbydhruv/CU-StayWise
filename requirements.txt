@@ -1,20 +1,17 @@
-blinker==1.9.0
-click==8.3.1
-colorama==0.4.6
-Flask==3.0.0
-greenlet==3.2.4
-gunicorn==23.0.0
-itsdangerous==2.2.0
-Jinja2==3.1.6
-MarkupSafe==3.0.3
-numpy==1.26.2
-packaging==25.0
+flask==3.0.0
 pandas==2.1.4
-psycopg2-binary==2.9.11
-python-dateutil==2.9.0.post0
-pytz==2025.2
-six==1.17.0
-SQLAlchemy==2.0.44
-typing_extensions==4.15.0
-tzdata==2025.2
-Werkzeug==3.1.3
+numpy==1.26.2
+
+psycopg2-binary
+SQLAlchemy
+
+
+
+<div class="top-nav-buttons">
+            <a href="{{ url_for('home') }}" class="top-nav-button">
+                Livability score
+            </a>
+            <a href="{{ url_for('index') }}" class="top-nav-button top-nav-button--secondary">
+                Interactive map
+            </a>
+        </div>

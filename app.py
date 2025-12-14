@@ -10,6 +10,79 @@ print("Loading data...")
 df = pd.read_csv("final_integrated.csv")
 model = LivabilityModel(df)
 
+# -------------------------
+# Dashboard cache (in-memory)
+# -------------------------
+_DASHBOARD_BUILDINGS_CACHE = {
+    "best_buildings": None,
+    "worst_buildings": None
+}
+
+def _compute_best_worst_buildings():
+    """
+    Compute best/worst buildings exactly the same way as before,
+    but only once per app start (cached).
+    """
+    # Return cached values if already computed
+    if (_DASHBOARD_BUILDINGS_CACHE["best_buildings"] is not None and
+        _DASHBOARD_BUILDINGS_CACHE["worst_buildings"] is not None):
+        return (_DASHBOARD_BUILDINGS_CACHE["best_buildings"],
+                _DASHBOARD_BUILDINGS_CACHE["worst_buildings"])
+
+    df_all = model.df  # uses same underlying data as before
+
+    print("Calculating livability scores for all buildings... (cached)")
+
+    if hasattr(model, 'building_scores_all') and model.building_scores_all is not None:
+        valid_bbls = model.building_scores_all['bbl'].unique()
+    else:
+        print("WARNING: No building_scores_all found, using df BBLs")
+        valid_bbls = df_all['bbl'].unique()
+
+    all_buildings_with_scores = []
+    for bbl in valid_bbls:
+        livability_info = model.get_building_livability(bbl)
+        if livability_info:
+            score = livability_info.get('livability_score')
+            if score is not None and isinstance(score, (int, float)):
+                all_buildings_with_scores.append(livability_info)
+
+    print(f"DEBUG: Total buildings with valid scores: {len(all_buildings_with_scores)}")
+
+    # Best buildings (highest scores)
+    all_buildings_with_scores.sort(key=lambda x: x['livability_score'], reverse=True)
+    best_buildings = [
+        {
+            "address": b['address'],
+            "zip": b['zipcode'],
+            "count": b['complaint_count'],
+            "livability_score": b['livability_score']
+        }
+        for b in all_buildings_with_scores[:10]
+    ]
+
+    # Worst buildings (lowest scores)
+    all_buildings_with_scores.sort(key=lambda x: x['livability_score'])
+    worst_buildings = [
+        {
+            "address": b['address'],
+            "zip": b['zipcode'],
+            "count": b['complaint_count'],
+            "livability_score": b['livability_score']
+        }
+        for b in all_buildings_with_scores[:10]
+    ]
+
+    print(f"DEBUG: Best buildings count: {len(best_buildings)}")
+    print(f"DEBUG: Worst buildings count: {len(worst_buildings)}")
+    if len(worst_buildings) > 0:
+        print(f"DEBUG: Sample worst building: {worst_buildings[0]}")
+
+    _DASHBOARD_BUILDINGS_CACHE["best_buildings"] = best_buildings
+    _DASHBOARD_BUILDINGS_CACHE["worst_buildings"] = worst_buildings
+
+    return best_buildings, worst_buildings
+
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/home", methods=["GET", "POST"])
@@ -106,51 +179,7 @@ def dashboard():
         })
     zip_breakdown = sorted(zip_breakdown, key=lambda z: z["zip"])
 
-    # Best buildings to live in - HIGHEST LIVABILITY SCORES
-    print("Calculating livability scores for all buildings...")
-
-    # Get BBLs that actually have scores (from the pre-computed building_scores_all)
-    # instead of iterating over ALL BBLs in the raw data
-    if hasattr(model, 'building_scores_all') and model.building_scores_all is not None:
-        valid_bbls = model.building_scores_all['bbl'].unique()
-    else:
-        print("WARNING: No building_scores_all found, using df BBLs")
-        valid_bbls = df_all['bbl'].unique()
-
-    all_buildings_with_scores = []
-    for bbl in valid_bbls:
-        livability_info = model.get_building_livability(bbl)
-        if livability_info:
-            score = livability_info.get('livability_score')
-            # Only include buildings with valid numeric scores
-            if score is not None and isinstance(score, (int, float)):
-                all_buildings_with_scores.append(livability_info)
-
-    print(f"DEBUG: Total buildings with valid scores: {len(all_buildings_with_scores)}")
-
-    # Sort by livability score (highest first) and take top 10
-    all_buildings_with_scores.sort(key=lambda x: x['livability_score'], reverse=True)
-    best_buildings = [
-        {
-            "address": b['address'],
-            "zip": b['zipcode'],
-            "count": b['complaint_count'],
-            "livability_score": b['livability_score']
-        }
-        for b in all_buildings_with_scores[:10]
-    ]
-
-    # Worst buildings - LOWEST LIVABILITY SCORES
-    all_buildings_with_scores.sort(key=lambda x: x['livability_score'])
-    worst_buildings = [
-        {
-            "address": b['address'],
-            "zip": b['zipcode'],
-            "count": b['complaint_count'],
-            "livability_score": b['livability_score']
-        }
-        for b in all_buildings_with_scores[:10]
-    ]
+    best_buildings, worst_buildings = _compute_best_worst_buildings()
 
     print(f"DEBUG: Best buildings count: {len(best_buildings)}")
     print(f"DEBUG: Worst buildings count: {len(worst_buildings)}")
