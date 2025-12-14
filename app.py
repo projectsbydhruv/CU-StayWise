@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request
 import pandas as pd
 import json
 from livability_model import (LivabilityModel, COMPLAINT_CATEGORIES)
+import numpy as np
 
 app = Flask(__name__)
 
@@ -20,68 +21,90 @@ _DASHBOARD_BUILDINGS_CACHE = {
 
 def _compute_best_worst_buildings():
     """
-    Compute best/worst buildings exactly the same way as before,
-    but only once per app start (cached).
+    Fast + cached: compute best/worst buildings WITHOUT per-BBL looping.
+    Uses the same livability score formula as get_building_livability().
     """
-    # Return cached values if already computed
     if (_DASHBOARD_BUILDINGS_CACHE["best_buildings"] is not None and
         _DASHBOARD_BUILDINGS_CACHE["worst_buildings"] is not None):
         return (_DASHBOARD_BUILDINGS_CACHE["best_buildings"],
                 _DASHBOARD_BUILDINGS_CACHE["worst_buildings"])
 
-    df_all = model.df  # uses same underlying data as before
+    print("Calculating livability scores for all buildings... (FAST cached)")
 
-    print("Calculating livability scores for all buildings... (cached)")
+    # Ensure building_scores_all exists
+    if not hasattr(model, "building_scores_all") or model.building_scores_all is None or len(model.building_scores_all) == 0:
+        _DASHBOARD_BUILDINGS_CACHE["best_buildings"] = []
+        _DASHBOARD_BUILDINGS_CACHE["worst_buildings"] = []
+        return [], []
 
-    if hasattr(model, 'building_scores_all') and model.building_scores_all is not None:
-        valid_bbls = model.building_scores_all['bbl'].unique()
-    else:
-        print("WARNING: No building_scores_all found, using df BBLs")
-        valid_bbls = df_all['bbl'].unique()
+    bs = model.building_scores_all.copy()
 
-    all_buildings_with_scores = []
-    for bbl in valid_bbls:
-        livability_info = model.get_building_livability(bbl)
-        if livability_info:
-            score = livability_info.get('livability_score')
-            if score is not None and isinstance(score, (int, float)):
-                all_buildings_with_scores.append(livability_info)
+    # Required columns for dashboard lists
+    required_cols = {"Incident_Address", "incident_zip", "complaint_count"}
+    if not required_cols.issubset(bs.columns):
+        _DASHBOARD_BUILDINGS_CACHE["best_buildings"] = []
+        _DASHBOARD_BUILDINGS_CACHE["worst_buildings"] = []
+        return [], []
 
-    print(f"DEBUG: Total buildings with valid scores: {len(all_buildings_with_scores)}")
+    # Fill NA complaints safely
+    bs["complaint_count"] = bs["complaint_count"].fillna(0).astype(float)
 
-    # Best buildings (highest scores)
-    all_buildings_with_scores.sort(key=lambda x: x['livability_score'], reverse=True)
+    # Same score logic as get_building_livability:
+    # ratio = complaints / max_complaints
+    # risk_index = sqrt(ratio)
+    # livability_score = (1 - risk_index) * 100 clipped
+    max_c = float(getattr(model, "max_complaints", bs["complaint_count"].max()) or 1.0)
+    if max_c <= 0:
+        max_c = 1.0
+
+    ratio = (bs["complaint_count"] / max_c).clip(lower=0.0)
+    risk_index = np.sqrt(ratio)
+    bs["livability_score"] = ((1.0 - risk_index) * 100.0).clip(lower=0.0, upper=100.0).round(1)
+
+    # Clean ZIP values (avoid crashes)
+    def safe_zip(x):
+        try:
+            if pd.isna(x):
+                return None
+            return int(float(x))
+        except (ValueError, TypeError):
+            return None
+
+    bs["zip_clean"] = bs["incident_zip"].apply(safe_zip)
+
+    # Drop rows where key fields are missing
+    bs = bs.dropna(subset=["Incident_Address", "livability_score"])
+    bs = bs[bs["Incident_Address"].astype(str).str.strip() != ""]
+
+    # Best 10 (highest score) & Worst 10 (lowest score)
+    best10 = bs.sort_values("livability_score", ascending=False).head(10)
+    worst10 = bs.sort_values("livability_score", ascending=True).head(10)
+
     best_buildings = [
         {
-            "address": b['address'],
-            "zip": b['zipcode'],
-            "count": b['complaint_count'],
-            "livability_score": b['livability_score']
+            "address": row["Incident_Address"],
+            "zip": row["zip_clean"],
+            "count": int(row["complaint_count"]),
+            "livability_score": float(row["livability_score"])
         }
-        for b in all_buildings_with_scores[:10]
+        for _, row in best10.iterrows()
     ]
 
-    # Worst buildings (lowest scores)
-    all_buildings_with_scores.sort(key=lambda x: x['livability_score'])
     worst_buildings = [
         {
-            "address": b['address'],
-            "zip": b['zipcode'],
-            "count": b['complaint_count'],
-            "livability_score": b['livability_score']
+            "address": row["Incident_Address"],
+            "zip": row["zip_clean"],
+            "count": int(row["complaint_count"]),
+            "livability_score": float(row["livability_score"])
         }
-        for b in all_buildings_with_scores[:10]
+        for _, row in worst10.iterrows()
     ]
-
-    print(f"DEBUG: Best buildings count: {len(best_buildings)}")
-    print(f"DEBUG: Worst buildings count: {len(worst_buildings)}")
-    if len(worst_buildings) > 0:
-        print(f"DEBUG: Sample worst building: {worst_buildings[0]}")
 
     _DASHBOARD_BUILDINGS_CACHE["best_buildings"] = best_buildings
     _DASHBOARD_BUILDINGS_CACHE["worst_buildings"] = worst_buildings
 
     return best_buildings, worst_buildings
+
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -134,7 +157,7 @@ def home():
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     """Summary / overview page with Ghost Landlord detector."""
-    df_all = model.df.copy()
+    df_all = model.df
 
     # Find complaint category column
     candidate_cols = [
