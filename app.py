@@ -272,8 +272,10 @@ def dashboard():
                         zipc = None
                         if "Incident_Address" in subset.columns and subset["Incident_Address"].notna().any():
                             addr = str(subset.iloc[0]["Incident_Address"])
-                        if "incident_zip" in subset.columns and subset["incident_zip"].notna().any():
-                            zipc = int(subset.iloc[0]["incident_zip"])
+                        if "incident_zip" in subset.columns:
+                            zseries = subset["incident_zip"].dropna()
+                            if not zseries.empty:
+                                zipc = int(float(zseries.iloc[0]))
 
                         res_building = {
                             "query": building_query,
